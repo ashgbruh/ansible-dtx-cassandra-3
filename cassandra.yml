@@ -15,11 +15,45 @@
         mode: 0644
         backup: yes
       become: true
+
     # read the new repository file
     - command: /usr/bin/yum clean expire-cache
       become: true
     - command: /usr/bin/yum repolist
       become: true
+
+    # Create user and group with proper uid/gid
+
+    # Example group command from Ansible Playbooks
+    - group:
+        name: cassandra
+        state: present
+        gid: 42000
+      become: true
+        
+    - user:
+        name: cassandra
+        #comment: "Datastax cassandra user"
+        uid: 42000
+        groups: cassandra
+        append: yes
+      become: true
+
+#    - command: /usr/sbin/groupadd -g 42000 cassandra
+#      become: true
+#    - command: /usr/sbin/useradd -g cassandra cassandra
+#      become: true
+
+    # Create the cassandra.yaml file from template
+    - template:
+        src: files/sysctl.d.cassandra.conf
+        dest: /etc/sysctl.d/cassandra.conf
+        owner: root
+        group: root
+        mode: "u=rw,g=rw,o=r"
+        force: true
+      become: true
+
 
     # Install packages
     - name: Install desired packages

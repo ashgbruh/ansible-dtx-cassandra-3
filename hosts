@@ -1,6 +1,6 @@
 # This is the ansible 'hosts' file.
 [local]
-127.0.0.1
+127.0.0.1 ansible_ssh_port=22 ansible_ssh_user=root
 
 [cassandra]
 centos-es-02
