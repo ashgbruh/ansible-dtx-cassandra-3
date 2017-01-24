@@ -1,0 +1,78 @@
+---
+- name: Install and setup a datastax cassandra node on rhel7
+  hosts: cassandra
+  vars_files:
+    - vars/vars.yml
+  gather_facts: False
+
+  tasks:
+    # Copy elastic repository file in /etc/yum.repos.d
+    - copy:
+        src: files/dtx-cassandra.repo
+        dest: /etc/yum.repos.d/dtx-cassandra.repo
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+      become: true
+    # read the new repository file
+    - command: /usr/bin/yum clean expire-cache
+      become: true
+    - command: /usr/bin/yum repolist
+      become: true
+
+    # Install packages
+    - name: Install desired packages
+      yum: >
+        package={{ item }}
+        state=present
+      with_items:
+        - jdk1.8.0_101.x86_64
+        - dsc30
+        - cassandra30-tools
+        - python-cassandra-driver.x86_64
+        - ntp
+      become: true
+
+    # Create the cassandra.yaml file from template
+    - template:
+        src: files/cassandra.yaml.j2
+        dest: /etc/cassandra/default.conf/cassandra.yaml
+        owner: cassandra
+        group: cassandra
+        mode: "u=rwx,g=rx,o=rx"
+        force: true
+      become: true
+
+    # Create the ntp.conf file
+    - copy:
+        src: files/ntp.conf
+        dest: /etc/ntp.conf
+        owner: root
+        group: root
+        mode: 0644
+        backup: yes
+        force: true
+      become: true
+
+    # start the ntpd service
+    - systemd:
+        name: ntpd
+        state: started
+      become: true
+    # enable ntpd service @boot
+    - systemd:
+        name: ntpd
+        enabled: yes
+      become: true
+
+    # start the cassandra service
+    - systemd:
+        name: cassandra
+        state: started
+      become: true
+    # enable cassandra service @boot
+    - systemd:
+        name: cassandra
+        enabled: yes
+      become: true

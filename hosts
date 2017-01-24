@@ -1,0 +1,10 @@
+# This is the ansible 'hosts' file.
+[local]
+127.0.0.1
+
+[cassandra]
+centos-es-02
+
+[trucmuch]
+centos-es-01
+centos-es-03

@@ -1,0 +1,14 @@
+---
+# cassandra vars
+host: "{{ inventory_hostname }}"
+host_ip: 192.168.1.81
+seeds: "centos-es-01,centos-es-02,centos-es-03"
+cluster_name: "Demogorgon"
+endpoint_snitch: "GossipingPropertyFileSnitch"
+
+# ops center vars
+
+# hostname list
+Node_01: "centos-es-01"
+Node_02: "centos-es-02"
+Node_03: "centos-es-03"
