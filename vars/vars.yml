@@ -1,14 +1,25 @@
 ---
-# cassandra vars
-host: "{{ inventory_hostname }}"
-host_ip: 192.168.1.81
-seeds: "centos-es-01,centos-es-02,centos-es-03"
-cluster_name: "Demogorgon"
-endpoint_snitch: "GossipingPropertyFileSnitch"
-
-# ops center vars
+# system
+jdk_url: "http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.rpm"
+jdk_checksum_md5: "md5:353403dbc633d70e527f7a8fc9cb708e"
 
 # hostname list
 Node_01: "centos-es-01"
 Node_02: "centos-es-02"
 Node_03: "centos-es-03"
+
+# cassandra.yaml
+host: "{{ inventory_hostname }}"
+host_ip: 192.168.1.82
+#host_ip: "{{ ansible_enp0s3.ipv4.address }}"
+#host_ip: "{{ hostvars.ansible_enp0s3.ipv4.address }}"
+#host_ip: {{ hostvars[inventory_hostname]['ansible_enp0s3']['ipv4']['address'] }}
+seeds: "centos-es-01,centos-es-02,centos-es-03"
+cluster_name: "Demogorgon"
+endpoint_snitch: "GossipingPropertyFileSnitch"
+
+# cassandra rack / dc
+dc: "dc1"
+rack: "rack1"
+
+# ops center vars

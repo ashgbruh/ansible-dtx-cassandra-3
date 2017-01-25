@@ -22,15 +22,28 @@
     - command: /usr/bin/yum repolist
       become: true
 
-    # Create user and group with proper uid/gid
+    # ## java install ## #
+    - name: download Oracle JDK check (md5)
+      get_url:
+        url: http://download.oracle.com/otn-pub/java/jdk/8u101-b13/jdk-8u101-linux-x64.rpm
+    #   url=http://download.oracle.com/otn-pub/java/jdk/8u102-b14/jdk-8u102-linux-x64.rpm
+        dest: /tmp/jdk-linux-x64.rpm
+        headers: 'Cookie:gpw_e24=xxx; oraclelicense=accept-securebackup-cookie'
+        checksum: md5:353403dbc633d70e527f7a8fc9cb708e
+    #    checksum: {{ jdk_checksum_md5 }}
 
-    # Example group command from Ansible Playbooks
+    - name: Install jdk-linux rpm package.
+      yum:
+         name: /tmp/jdk-linux-x64.rpm
+         state: present
+      become: true
+
+    # Create user and group with proper uid/gid
     - group:
         name: cassandra
         state: present
         gid: 42000
       become: true
-        
     - user:
         name: cassandra
         #comment: "Datastax cassandra user"
@@ -39,12 +52,7 @@
         append: yes
       become: true
 
-#    - command: /usr/sbin/groupadd -g 42000 cassandra
-#      become: true
-#    - command: /usr/sbin/useradd -g cassandra cassandra
-#      become: true
-
-    # Create the cassandra.yaml file from template
+    # Create the sysctld. cassandra file from template
     - template:
         src: files/sysctl.d.cassandra.conf
         dest: /etc/sysctl.d/cassandra.conf
@@ -54,14 +62,12 @@
         force: true
       become: true
 
-
     # Install packages
     - name: Install desired packages
       yum: >
         package={{ item }}
         state=present
       with_items:
-        - jdk1.8.0_101.x86_64
         - dsc30
         - cassandra30-tools
         - python-cassandra-driver.x86_64
@@ -72,6 +78,24 @@
     - template:
         src: files/cassandra.yaml.j2
         dest: /etc/cassandra/default.conf/cassandra.yaml
+        owner: cassandra
+        group: cassandra
+        mode: "u=rwx,g=rx,o=rx"
+        force: true
+      become: true
+    # Create the cassandra-env.sh file from template
+    - template:
+        src: files/cassandra-env.sh.j2
+        dest: /etc/cassandra/default.conf/cassandra-env.sh
+        owner: cassandra
+        group: cassandra
+        mode: "u=rwx,g=rx,o=rx"
+        force: true
+      become: true
+    # Create the cassandra-rackdc.properties file from template
+    - template:
+        src: files/cassandra-rackdc.properties.j2
+        dest: /etc/cassandra/default.conf/cassandra-rackdc.properties
         owner: cassandra
         group: cassandra
         mode: "u=rwx,g=rx,o=rx"
@@ -88,6 +112,8 @@
         backup: yes
         force: true
       become: true
+      tags:
+        - configuration
 
     # start the ntpd service
     - systemd:

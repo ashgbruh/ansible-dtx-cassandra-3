@@ -1,5 +1,4 @@
-cat << EOF > /etc/cassandra/default.conf/cassandra.yaml
-cluster_name: "{{ cluster_name }}"
+cluster_name: '{{ cluster_name }}'
 num_tokens: 256
 hinted_handoff_enabled: true
 max_hint_window_in_ms: 10800000 # 3 hours
