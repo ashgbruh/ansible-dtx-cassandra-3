@@ -3,9 +3,14 @@
   hosts: cassandra
   vars_files:
     - vars/vars.yml
-  gather_facts: False
+  gather_facts: True
 
   tasks:
+    # Displaying all variables/facts known for host {{ inventory_hostname }}
+    #- debug: var=hostvars[inventory_hostname]
+    - debug: var=hostvars[inventory_hostname]['ansible_enp0s3']['ipv4']['address']
+    #- debug: var=hostvars[inventory_hostname]['ansible_default_ipv4']['address']
+
     # Copy elastic repository file in /etc/yum.repos.d
     - copy:
         src: files/dtx-cassandra.repo
@@ -15,6 +20,7 @@
         mode: 0644
         backup: yes
       become: true
+
 
     # read the new repository file
     - command: /usr/bin/yum clean expire-cache
