@@ -24,7 +24,7 @@ Run the following command.
 ```sh
 $ PLAYBOOK=cassandra.yml
 
-$ ansible-playbook -i hosts ${PLAYBOOK}.yml --list-hosts
+$ ansible-playbook -i hosts ${PLAYBOOK} --list-hosts
 ```
 If all your servers respond you are ready to go and re-do the command without the --list-hosts parameter.
 
@@ -35,7 +35,7 @@ Complete this 3 nodes cluster with the datastax ops center
 
 ```sh
 $ PLAYBOOK=opscenter.yml
-$ ansible-playbook -i hosts ${PLAYBOOK}.yml --list-hosts
+$ ansible-playbook -i hosts ${PLAYBOOK} --list-hosts
 ```
 
 ## information
